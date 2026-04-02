@@ -11,6 +11,8 @@
         .card { border: none; border-radius: 12px; transition: 0.3s; }
         .btn { border-radius: 8px; font-weight: 500; }
         .navbar { background-color: #1a1a1a !important; }
+        .nav-link { color: rgba(255,255,255,0.7) !important; transition: 0.3s; margin: 0 5px; }
+        .nav-link:hover, .nav-link.active { color: #fff !important; }
         .stat-card { border-left: 5px solid; }
         .table thead { background-color: #f8f9fa; }
         .badge { font-weight: 600; padding: 6px 12px; border-radius: 30px; }
@@ -24,16 +26,40 @@
         <a class="navbar-brand fw-bold" href="{{ route('dashboard') }}">
             <i class="bi bi-shield-lock-fill me-2"></i>E-PENGADUAN
         </a>
-        <div class="d-flex align-items-center ms-auto">
-            <span class="text-light me-3 small d-none d-sm-inline">
-                Halo, <strong>{{ Auth::user()->nama }}</strong>
-            </span>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button class="btn btn-outline-danger btn-sm px-3">
-                    <i class="bi bi-box-arrow-right me-1"></i>Keluar
-                </button>
-            </form>
+        
+        {{-- Tombol Toggle Mobile --}}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-3">
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                        Dashboard
+                    </a>
+                </li>
+                {{-- Menu khusus Admin --}}
+                @if(Auth::user()->level == 'admin')
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('petugas*') ? 'active' : '' }}" href="{{ route('petugas.index') }}">
+                        Kelola Petugas
+                    </a>
+                </li>
+                @endif
+            </ul>
+
+            <div class="d-flex align-items-center ms-auto mt-3 mt-lg-0">
+                <span class="text-light me-3 small d-none d-sm-inline">
+                    Halo, <strong>{{ Auth::user()->nama }}</strong>
+                </span>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button class="btn btn-outline-danger btn-sm px-3">
+                        <i class="bi bi-box-arrow-right me-1"></i>Keluar
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </nav>
@@ -180,35 +206,20 @@
                         </td>
                         <td class="text-end pe-4">
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('pengaduan.show', $p->id) }}" 
-                                class="btn btn-info btn-sm text-white shadow-sm" 
-                                title="Lihat Detail">
+                                <a href="{{ route('pengaduan.show', $p->id) }}" class="btn btn-info btn-sm text-white shadow-sm">
                                     <i class="bi bi-eye"></i>
                                 </a>
-
                                 @if(Auth::user()->level == 'masyarakat' && $p->status == '0')
-                                    <form action="{{ route('pengaduan.destroy', $p->id) }}" 
-                                        method="POST" 
-                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan ini?')">
-                                        @csrf 
-                                        @method('DELETE')
-                                        <button type="submit" 
-                                                class="btn btn-danger btn-sm shadow-sm" 
-                                                title="Hapus Laporan">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                    <form action="{{ route('pengaduan.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Hapus laporan?')">
+                                        @csrf @method('DELETE')
+                                        <button class="btn btn-danger btn-sm shadow-sm"><i class="bi bi-trash"></i></button>
                                     </form>
                                 @endif
                             </div>
                         </td>
                     </tr>
                     @empty
-                    <tr>
-                        <td colspan="5" class="text-center py-5 text-muted">
-                            <i class="bi bi-inbox fs-1 d-block mb-3 opacity-25"></i>
-                            Belum ada laporan yang ditemukan.
-                        </td>
-                    </tr>
+                    <tr><td colspan="5" class="text-center py-5 text-muted">Belum ada laporan.</td></tr>
                     @endforelse
                 </tbody>
             </table>
