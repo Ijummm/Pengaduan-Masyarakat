@@ -14,9 +14,13 @@
             <div class="card border-0 shadow-sm p-4">
                 <h5 class="fw-bold">Laporan Dari: {{ $pengaduan->petugas?->nama ?? 'Anonim' }}</h5>
                 <hr>
-                @if($pengaduan->foto)
-                    <img src="{{ asset('assets/pengaduan/'.$pengaduan->foto) }}" class="img-fluid rounded mb-3">
-                @endif
+                <div class="text-center bg-light rounded mb-3" style="overflow: hidden; max-height: 350px;">
+                    @if($pengaduan->foto)
+                        <img src="{{ asset('assets/pengaduan/'.$pengaduan->foto) }}" 
+                            class="img-fluid" 
+                            style="width: 100%; height: 350px; object-fit: contain;">
+                    @endif
+                </div>
                 <p><strong>Isi Laporan:</strong></p>
                 <div class="p-3 bg-light rounded">{{ $pengaduan->isi_laporan }}</div>
                 <p class="mt-3 text-muted">Tanggal: {{ $pengaduan->tg_pengaduan }}</p>

@@ -50,7 +50,7 @@ class PengaduanController extends Controller
         }
 
         if (Auth::user()->level == 'masyarakat') {
-            $query->where('nik', Auth::user()->nik);
+            $query->where('petugas_id', Auth::id());
         }
 
         $pengaduans = $query->latest()->get();
@@ -96,7 +96,7 @@ class PengaduanController extends Controller
     {
         $pengaduan = Pengaduan::findOrFail($id);
 
-        if ($pengaduan->nik !== Auth::user()->nik) {
+        if ($pengaduan->petugas_id !== Auth::id()) {
             return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk menghapus laporan ini.');
         }
 
